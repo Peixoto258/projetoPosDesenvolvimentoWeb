@@ -33,4 +33,9 @@ public class ContaController {
     public void deletarConta(@PathVariable Long id) {
         contaService.deletarConta(id);
     }
+
+    @PutMapping("/atualizar-valor/{data}")
+    public void atualizarValorComTaxaDeJuros(@PathVariable String data) {
+        contaService.atualizarValorComTaxaDeJuros(data);
+    }
 }
