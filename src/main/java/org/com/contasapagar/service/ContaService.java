@@ -50,4 +50,8 @@ public class ContaService {
             }
         }
     }
+
+    public Conta encontrarPorId(Long id) {
+        return contaRepository.findById(id).get();
+    }
 }

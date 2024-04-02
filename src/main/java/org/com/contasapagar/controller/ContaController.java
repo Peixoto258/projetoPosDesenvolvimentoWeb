@@ -19,6 +19,11 @@ public class ContaController {
         return contaService.listarContas();
     }
 
+    @GetMapping("/{id}")
+    public Conta encontrarPorId(@PathVariable Long id) {
+        return contaService.encontrarPorId(id);
+    }
+
     @PostMapping
     public Conta criarConta(@RequestBody Conta conta) {
         return contaService.criarConta(conta);
