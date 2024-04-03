@@ -1,8 +1,11 @@
 package org.com.contasapagar.controller;
 
+import org.com.contasapagar.dto.ContaDto;
+import org.com.contasapagar.dto.NovoPagamentoDto;
 import org.com.contasapagar.model.Conta;
 import org.com.contasapagar.service.ContaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,5 +45,12 @@ public class ContaController {
     @PutMapping("/atualizar-valor/{data}")
     public void atualizarValorComTaxaDeJuros(@PathVariable String data) {
         contaService.atualizarValorComTaxaDeJuros(data);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<ContaDto> lancarPagamento(@PathVariable final Long id,
+                                                    @RequestBody final NovoPagamentoDto novoPagamentoDto) {
+        final var contaDto = contaService.lancarPagamento(id, novoPagamentoDto);
+        return ResponseEntity.ok(contaDto);
     }
 }

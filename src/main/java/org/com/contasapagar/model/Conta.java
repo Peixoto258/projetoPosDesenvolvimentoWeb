@@ -3,6 +3,7 @@ package org.com.contasapagar.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -31,6 +32,9 @@ public class Conta {
 
     @Column
     private char contraAtrasada;
+
+    @Column(name = "dataPagamento")
+    private LocalDate dataPagamento;
 
     public Long getId() {
         return id;
@@ -80,6 +84,14 @@ public class Conta {
         this.taxaDeJurosPorDiasDeAtraso = taxaDeJurosPorDiasDeAtraso;
     }
 
+    public LocalDate getDataPagamento() {
+        return dataPagamento;
+    }
+
+    public void setDataPagamento(LocalDate dataPagamento) {
+        this.dataPagamento = dataPagamento;
+    }
+
     public char getContraAtrasada() {
         return contraAtrasada;
     }
@@ -110,6 +122,7 @@ public class Conta {
                 ", vencimento=" + vencimento +
                 ", taxaDeJurosPorDiasDeAtraso=" + taxaDeJurosPorDiasDeAtraso +
                 ", contraAtrasada=" + contraAtrasada +
+                ", dataPagamento=" + dataPagamento +
                 '}';
     }
 }

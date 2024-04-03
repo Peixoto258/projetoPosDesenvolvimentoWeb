@@ -1,5 +1,9 @@
 package org.com.contasapagar.service;
 
+import org.com.contasapagar.dto.ContaDto;
+import org.com.contasapagar.dto.NovoPagamentoDto;
+import org.com.contasapagar.exception.ContaNotFoundException;
+import org.com.contasapagar.mapper.ContaMapper;
 import org.com.contasapagar.model.Conta;
 import org.com.contasapagar.repository.ContaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +19,12 @@ public class ContaService {
 
     @Autowired
     private ContaRepository contaRepository;
+
+    private final ContaMapper contaMapper;
+
+    public ContaService(ContaMapper contaMapper) {
+        this.contaMapper = contaMapper;
+    }
 
     public List<Conta> listarContas() {
         return contaRepository.findAll();
@@ -54,4 +64,16 @@ public class ContaService {
     public Conta encontrarPorId(Long id) {
         return contaRepository.findById(id).get();
     }
+
+    public ContaDto lancarPagamento(Long id, NovoPagamentoDto dto) {
+        return contaRepository.findById(id)
+                .map(contaEntity -> {
+                    contaEntity.setDataPagamento(dto.dataPagamento());
+                    return contaEntity;
+                })
+                .map(contaRepository::save)
+                .map(contaMapper::toDto)
+                .orElseThrow(() -> new ContaNotFoundException("Conta não encontrada, contaId: " + id));
+    }
+
 }
