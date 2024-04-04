@@ -13,7 +13,7 @@ public record ContaDto(
         @JsonInclude(JsonInclude.Include.NON_NULL)
         BigDecimal valorAtualizadoComJuros,
         LocalDate vencimento,
-        Boolean contraAtrasada,
+        Boolean contaAtrasada,
         Long taxaDeJurosPorDiasDeAtraso,
         LocalDate dataPagamento
 ) { }
