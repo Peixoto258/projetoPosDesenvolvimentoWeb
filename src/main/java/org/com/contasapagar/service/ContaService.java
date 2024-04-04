@@ -1,6 +1,8 @@
 package org.com.contasapagar.service;
 
+import org.com.contasapagar.dto.ContaAtualizadaDto;
 import org.com.contasapagar.dto.ContaDto;
+import org.com.contasapagar.dto.NovaContaDto;
 import org.com.contasapagar.dto.NovoPagamentoDto;
 import org.com.contasapagar.exception.ContaNotFoundException;
 import org.com.contasapagar.mapper.ContaMapper;
@@ -31,17 +33,18 @@ public class ContaService {
         return contaMapper.toListDto(contaRepository.findAll());
     }
 
-    public ContaDto criarConta(Conta conta) {
-        return contaMapper.toDto(contaRepository.save(conta));
+    public ContaDto criarConta( final NovaContaDto dto) {
+        final var novaConta = contaMapper.toModel(dto);
+        return contaMapper.toDto(contaRepository.save(novaConta));
     }
 
-    public ContaDto atualizarConta(Long id, Conta conta) {
-        if (contaRepository.existsById(id)) {
-            conta.setId(id);
-            return contaMapper.toDto(contaRepository.save(conta));
-        } else {
-            throw new ContaNotFoundException(id);
-        }
+    public ContaDto atualizarConta(Long id, ContaAtualizadaDto dto) {
+        final var conta = contaRepository.findById(id)
+                .orElseThrow(() -> new ContaNotFoundException(id));
+
+        final var contaAtualizada = contaMapper.toModelUpdate(dto, conta);
+        return contaMapper
+                .toDto(contaRepository.save(contaAtualizada));
     }
 
     public void deletarConta(Long id) {

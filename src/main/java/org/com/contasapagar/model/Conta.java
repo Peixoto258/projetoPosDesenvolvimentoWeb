@@ -15,24 +15,38 @@ public class Conta {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column
+    @Column(nullable = false)
     private String cpf;
 
-    @Column
+    @Column(nullable = false)
     private String titulo;
 
-    @Column
+    @Column(nullable = false)
     private BigDecimal valor;
 
     @Column(nullable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private LocalDate vencimento;
 
-    @Column
+    @Column(nullable = false)
     private Long taxaDeJurosPorDiasDeAtraso;
 
-    @Column(name = "dataPagamento")
+    @Column
     private LocalDate dataPagamento;
+
+    public Conta() {}
+
+    public Conta(String cpf,
+                 String titulo,
+                 BigDecimal valor,
+                 LocalDate vencimento,
+                 Long taxaDeJurosPorDiasDeAtraso) {
+        this.cpf = cpf;
+        this.titulo = titulo;
+        this.valor = valor;
+        this.vencimento = vencimento;
+        this.taxaDeJurosPorDiasDeAtraso = taxaDeJurosPorDiasDeAtraso;
+    }
 
     public Long getId() {
         return id;
