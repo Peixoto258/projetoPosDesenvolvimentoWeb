@@ -3,8 +3,9 @@ package org.com.contasapagar.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 @Entity
@@ -21,11 +22,11 @@ public class Conta {
     private String titulo;
 
     @Column
-    private Double valor;
+    private BigDecimal valor;
 
     @Column(nullable = false)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
-    private LocalDateTime vencimento;
+    private LocalDate vencimento;
 
     @Column
     private Long taxaDeJurosPorDiasDeAtraso;
@@ -60,19 +61,19 @@ public class Conta {
         this.titulo = titulo;
     }
 
-    public Double getValor() {
+    public BigDecimal getValor() {
         return valor;
     }
 
-    public void setValor(Double valor) {
+    public void setValor(BigDecimal valor) {
         this.valor = valor;
     }
 
-    public LocalDateTime getVencimento() {
+    public LocalDate getVencimento() {
         return vencimento;
     }
 
-    public void setVencimento(LocalDateTime vencimento) {
+    public void setVencimento(LocalDate vencimento) {
         this.vencimento = vencimento;
     }
 
@@ -98,6 +99,18 @@ public class Conta {
 
     public void setContraAtrasada(char contraAtrasada) {
         this.contraAtrasada = contraAtrasada;
+    }
+
+    public BigDecimal getValorAtualizadoComJuros() {
+        final var diaAtual = LocalDate.now();
+        if (diaAtual.isAfter(vencimento)) {
+            final var quantidadeDiasEmAtraso = ChronoUnit.DAYS.between(vencimento, diaAtual);
+            final double jurosTotalEmAtraso = (double) taxaDeJurosPorDiasDeAtraso * quantidadeDiasEmAtraso;
+            final double taxaJurosTotal = (jurosTotalEmAtraso / 100);
+            final var valorDoJuros = valor.multiply(BigDecimal.valueOf(taxaJurosTotal));
+            return valor.add(valorDoJuros);
+        }
+        return valor;
     }
 
     @Override

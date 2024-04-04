@@ -6,7 +6,8 @@ import org.com.contasapagar.repository.ContaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Component
 public class DataLoader {
@@ -21,9 +22,9 @@ public class DataLoader {
             Conta conta = new Conta();
             conta.setCpf("1234567890" + i);
             conta.setTitulo("Conta " + (i + 1));
-            conta.setValor(100.0 * (i + 1));
-            conta.setVencimento(LocalDateTime.now().plusDays(i + 1)); // Vencimento em dias incrementais
-            conta.setTaxaDeJurosPorDiasDeAtraso(i+1);
+            conta.setValor(BigDecimal.valueOf(100.0 * (i + 1)));
+            conta.setVencimento(LocalDate.now().plusDays(i + 1)); // Vencimento em dias incrementais
+            conta.setTaxaDeJurosPorDiasDeAtraso(i + 1);
             conta.setContraAtrasada('N');
             contaRepository.save(conta);
         }

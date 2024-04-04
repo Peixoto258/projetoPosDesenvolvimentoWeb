@@ -6,9 +6,9 @@ import org.com.contasapagar.exception.ContaNotFoundException;
 import org.com.contasapagar.mapper.ContaMapper;
 import org.com.contasapagar.model.Conta;
 import org.com.contasapagar.repository.ContaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -17,52 +17,58 @@ import java.util.List;
 @Service
 public class ContaService {
 
-    @Autowired
-    private ContaRepository contaRepository;
+
+    private final ContaRepository contaRepository;
 
     private final ContaMapper contaMapper;
 
-    public ContaService(ContaMapper contaMapper) {
+    public ContaService(ContaRepository contaRepository, ContaMapper contaMapper) {
+        this.contaRepository = contaRepository;
         this.contaMapper = contaMapper;
     }
 
-    public List<Conta> listarContas() {
-        return contaRepository.findAll();
+    public List<ContaDto> listarContas() {
+        return contaMapper.toListDto(contaRepository.findAll());
     }
 
-    public Conta criarConta(Conta conta) {
-        return contaRepository.save(conta);
+    public ContaDto criarConta(Conta conta) {
+        return contaMapper.toDto(contaRepository.save(conta));
     }
 
-    public Conta atualizarConta(Long id, Conta conta) {
+    public ContaDto atualizarConta(Long id, Conta conta) {
         if (contaRepository.existsById(id)) {
             conta.setId(id);
-            return contaRepository.save(conta);
+            return contaMapper.toDto(contaRepository.save(conta));
         } else {
-            throw new RuntimeException("Conta não encontrada com o ID: " + id);
+            throw new ContaNotFoundException(id);
         }
     }
 
     public void deletarConta(Long id) {
-        contaRepository.deleteById(id);
+        final var conta = contaRepository.findById(id)
+                .orElseThrow(() -> new ContaNotFoundException(id));
+        contaRepository.delete(conta);
     }
 
     public void atualizarValorComTaxaDeJuros(String dataEspecifica) {
         LocalDate dataFornecida = LocalDate.parse(dataEspecifica, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
         List<Conta> contas = contaRepository.findAll();
         for (Conta conta : contas) {
-            if (conta.getVencimento().isBefore(dataFornecida.atStartOfDay())) {
+            if (conta.getVencimento().isBefore(dataFornecida)) {
                 // Calcular o valor atualizado com base na taxa de juros por dias de atraso
                 long diasAtraso = ChronoUnit.DAYS.between(conta.getVencimento(), dataFornecida);
-                double novoValor = conta.getValor() + (conta.getTaxaDeJurosPorDiasDeAtraso() * diasAtraso);
+                BigDecimal novoValor = conta.getValor()
+                        .add(BigDecimal.valueOf(conta.getTaxaDeJurosPorDiasDeAtraso() * diasAtraso));
                 conta.setValor(novoValor);
                 contaRepository.save(conta);
             }
         }
     }
 
-    public Conta encontrarPorId(Long id) {
-        return contaRepository.findById(id).get();
+    public ContaDto encontrarPorId(Long id) {
+        return contaRepository.findById(id)
+                .map(contaMapper::toDto)
+                .orElseThrow(() -> new ContaNotFoundException(id));
     }
 
     public ContaDto lancarPagamento(Long id, NovoPagamentoDto dto) {
@@ -73,7 +79,7 @@ public class ContaService {
                 })
                 .map(contaRepository::save)
                 .map(contaMapper::toDto)
-                .orElseThrow(() -> new ContaNotFoundException("Conta não encontrada, contaId: " + id));
+                .orElseThrow(() -> new ContaNotFoundException(id));
     }
 
 }

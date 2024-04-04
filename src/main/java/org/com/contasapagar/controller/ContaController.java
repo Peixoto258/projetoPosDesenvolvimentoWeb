@@ -18,22 +18,22 @@ public class ContaController {
     private ContaService contaService;
 
     @GetMapping
-    public List<Conta> listarContas() {
+    public List<ContaDto> listarContas() {
         return contaService.listarContas();
     }
 
     @GetMapping("/{id}")
-    public Conta encontrarPorId(@PathVariable Long id) {
+    public ContaDto encontrarPorId(@PathVariable Long id) {
         return contaService.encontrarPorId(id);
     }
 
     @PostMapping
-    public Conta criarConta(@RequestBody Conta conta) {
+    public ContaDto criarConta(@RequestBody Conta conta) {
         return contaService.criarConta(conta);
     }
 
     @PutMapping("/{id}")
-    public Conta atualizarConta(@PathVariable Long id, @RequestBody Conta conta) {
+    public ContaDto atualizarConta(@PathVariable Long id, @RequestBody Conta conta) {
         return contaService.atualizarConta(id, conta);
     }
 
@@ -53,4 +53,5 @@ public class ContaController {
         final var contaDto = contaService.lancarPagamento(id, novoPagamentoDto);
         return ResponseEntity.ok(contaDto);
     }
+
 }
