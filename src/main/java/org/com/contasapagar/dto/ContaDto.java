@@ -8,7 +8,9 @@ public record ContaDto(
         String cpf,
         String titulo,
         BigDecimal valor,
+        BigDecimal valorAtualizadoComJuros,
         LocalDate vencimento,
+        Boolean contraAtrasada,
         Long taxaDeJurosPorDiasDeAtraso,
         LocalDate dataPagamento
 ) { }

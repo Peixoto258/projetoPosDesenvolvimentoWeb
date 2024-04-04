@@ -31,9 +31,6 @@ public class Conta {
     @Column
     private Long taxaDeJurosPorDiasDeAtraso;
 
-    @Column
-    private char contraAtrasada;
-
     @Column(name = "dataPagamento")
     private LocalDate dataPagamento;
 
@@ -93,17 +90,13 @@ public class Conta {
         this.dataPagamento = dataPagamento;
     }
 
-    public char getContraAtrasada() {
-        return contraAtrasada;
-    }
-
-    public void setContraAtrasada(char contraAtrasada) {
-        this.contraAtrasada = contraAtrasada;
+    public boolean isContraAtrasada() {
+        return LocalDate.now().isAfter(vencimento);
     }
 
     public BigDecimal getValorAtualizadoComJuros() {
         final var diaAtual = LocalDate.now();
-        if (diaAtual.isAfter(vencimento)) {
+        if (isContraAtrasada()) {
             final var quantidadeDiasEmAtraso = ChronoUnit.DAYS.between(vencimento, diaAtual);
             final double jurosTotalEmAtraso = (double) taxaDeJurosPorDiasDeAtraso * quantidadeDiasEmAtraso;
             final double taxaJurosTotal = (jurosTotalEmAtraso / 100);
@@ -117,12 +110,12 @@ public class Conta {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Conta conta)) return false;
-        return getContraAtrasada() == conta.getContraAtrasada() && Objects.equals(getId(), conta.getId()) && Objects.equals(getCpf(), conta.getCpf()) && Objects.equals(getTitulo(), conta.getTitulo()) && Objects.equals(getValor(), conta.getValor()) && Objects.equals(getVencimento(), conta.getVencimento()) && Objects.equals(getTaxaDeJurosPorDiasDeAtraso(), conta.getTaxaDeJurosPorDiasDeAtraso());
+        return Objects.equals(getId(), conta.getId()) && Objects.equals(getCpf(), conta.getCpf()) && Objects.equals(getTitulo(), conta.getTitulo()) && Objects.equals(getValor(), conta.getValor()) && Objects.equals(getVencimento(), conta.getVencimento()) && Objects.equals(getTaxaDeJurosPorDiasDeAtraso(), conta.getTaxaDeJurosPorDiasDeAtraso());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getCpf(), getTitulo(), getValor(), getVencimento(), getTaxaDeJurosPorDiasDeAtraso(), getContraAtrasada());
+        return Objects.hash(getId(), getCpf(), getTitulo(), getValor(), getVencimento(), getTaxaDeJurosPorDiasDeAtraso(), isContraAtrasada());
     }
 
     @Override
@@ -134,7 +127,7 @@ public class Conta {
                 ", valor=" + valor +
                 ", vencimento=" + vencimento +
                 ", taxaDeJurosPorDiasDeAtraso=" + taxaDeJurosPorDiasDeAtraso +
-                ", contraAtrasada=" + contraAtrasada +
+                ", contraAtrasada=" + isContraAtrasada() +
                 ", dataPagamento=" + dataPagamento +
                 '}';
     }

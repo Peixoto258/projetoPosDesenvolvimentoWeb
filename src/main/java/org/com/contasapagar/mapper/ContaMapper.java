@@ -20,8 +20,10 @@ public class ContaMapper {
                 conta.getId(),
                 conta.getCpf(),
                 conta.getTitulo(),
+                conta.getValor(),
                 conta.getValorAtualizadoComJuros(),
                 conta.getVencimento(),
+                conta.isContraAtrasada(),
                 conta.getTaxaDeJurosPorDiasDeAtraso(),
                 conta.getDataPagamento());
     }

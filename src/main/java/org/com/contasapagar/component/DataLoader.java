@@ -25,7 +25,6 @@ public class DataLoader {
             conta.setValor(BigDecimal.valueOf(100.0 * (i + 1)));
             conta.setVencimento(LocalDate.now().plusDays(i + 1)); // Vencimento em dias incrementais
             conta.setTaxaDeJurosPorDiasDeAtraso(i + 1);
-            conta.setContraAtrasada('N');
             contaRepository.save(conta);
         }
     }
